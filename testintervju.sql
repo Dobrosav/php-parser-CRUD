@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 21, 2022 at 05:26 PM
+-- Generation Time: Jan 21, 2022 at 08:41 PM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 7.4.18
 
@@ -58,7 +58,7 @@ CREATE TABLE `products` (
   `sale_price` decimal(10,0) NOT NULL,
   `description` varchar(150) NOT NULL,
   `idcat` int(11) NOT NULL,
-  `iddep` int(11) NOT NULL
+  `iddep` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -82,8 +82,8 @@ ALTER TABLE `departments`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`product_number`),
-  ADD KEY `iddep` (`iddep`),
-  ADD KEY `idcat` (`idcat`);
+  ADD KEY `idcat` (`idcat`),
+  ADD KEY `iddep` (`iddep`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -93,13 +93,13 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `idcat` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idcat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=445;
 
 --
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `iddep` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `iddep` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- Constraints for dumped tables
@@ -109,8 +109,8 @@ ALTER TABLE `departments`
 -- Constraints for table `products`
 --
 ALTER TABLE `products`
-  ADD CONSTRAINT `idcat` FOREIGN KEY (`idcat`) REFERENCES `categories` (`idcat`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `iddep` FOREIGN KEY (`iddep`) REFERENCES `departments` (`iddep`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `idcat` FOREIGN KEY (`idcat`) REFERENCES `categories` (`idcat`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `iddep` FOREIGN KEY (`iddep`) REFERENCES `departments` (`iddep`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
