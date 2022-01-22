@@ -8,15 +8,17 @@ use App\Models\Product;
 
 class Home extends BaseController
 {
-	public function index()
-	{
-       echo "DobroDosli";
-	}
+    public function index()
+    {
+        echo "DobroDosli";
+    }
+
     public $servername = "localhost";
     public $username = "root";
     public $password = "";
     public $dbname = "testintervju";
-	public  function  popunibazu()
+
+    public function popunibazu()
     {
         if (($file = fopen('product_categories.csv', "r")) != false) {
             while (($data = fgetcsv($file, 1000, ",")) != false) {
@@ -72,83 +74,171 @@ class Home extends BaseController
 
             $conn->query($query);
         }
-        $msg=new Message();
-        $msg->message="ok";
+        $msg = new Message();
+        $msg->message = "ok";
         return json_encode($msg);
     }
-    public function  readproductinjson(){
-	    $productkey=$this->request->getVar('prod-no');
+
+    public function readproductinjson()
+    {
+        $productkey = $this->request->getVar('prod-no');
         $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
         if ($conn->connect_error) {
             die("Connection failed: ");
         }
-        $prod=new Product();
-        $sql="select * from products where product_number='".$productkey."'";
-        $res=$conn->query($sql) or die($conn->error);
-        while($row = $res->fetch_assoc()) {
-            $prod->pn=$row['product_number'];
-            $prod->man=$row['manufacturer'];
-            $prod->upc=$row['upc'];
-            $prod->sku=$row['sku'];
-            $prod->reg_price=$row['regular_price'];
-            $prod->saleprice=$row['sale_price'];
-            $prod->desc=$row['description'];
-            $prod->idcat=$row['idcat'];
-            $prod->iddep=$row['iddep'];
+        $prod = new Product();
+        $sql = "select * from products where product_number='" . $productkey . "'";
+        $res = $conn->query($sql) or die($conn->error);
+        while ($row = $res->fetch_assoc()) {
+            $prod->pn = $row['product_number'];
+            $prod->man = $row['manufacturer'];
+            $prod->upc = $row['upc'];
+            $prod->sku = $row['sku'];
+            $prod->reg_price = $row['regular_price'];
+            $prod->saleprice = $row['sale_price'];
+            $prod->desc = $row['description'];
+            $prod->idcat = $row['idcat'];
+            $prod->iddep = $row['iddep'];
         }
         return json_encode($prod);
     }
-    public function showAllCategories(){
+
+    public function showAllCategories()
+    {
         $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
         if ($conn->connect_error) {
             die("Connection failed: ");
         }
 
 
-        $sql="select * from categories";
-        $res=$conn->query($sql) or die($conn->error);
-        while($row = $res->fetch_assoc()) {
-            $prod=new Categoria();
-            $prod->idcat=$row['idcat'];
-            $prod->name=$row['name'];
-            $arr[]=$prod;
+        $sql = "select * from categories";
+        $res = $conn->query($sql) or die($conn->error);
+        while ($row = $res->fetch_assoc()) {
+            $prod = new Categoria();
+            $prod->idcat = $row['idcat'];
+            $prod->name = $row['name'];
+            $arr[] = $prod;
         }
         return json_encode($arr);
     }
-    public function editCategories(){
+
+    public function editCategories()
+    {
         $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
         if ($conn->connect_error) {
             die("Connection failed: ");
         }
-        $oldname=$this->request->getVar('oldname');
-        $newname=$this->request->getVar('newname');
+        $oldname = $this->request->getVar('oldname');
+        $newname = $this->request->getVar('newname');
         $sql = "select idcat from categories where name='" . $oldname . "'";
         $res = $conn->query($sql) or die($conn . error);
         while ($row = $res->fetch_assoc()) {
             $idcat = $row['idcat'];
         }
-        $sql="UPDATE categories set name ='".$newname."'"." where idcat=".$idcat;
+        $sql = "UPDATE categories set name ='" . $newname . "'" . " where idcat=" . $idcat;
         $conn->query($sql);
-        $msg=new Message();
-        $msg->message="ok";
+        $msg = new Message();
+        $msg->message = "ok";
         return json_encode($msg);
     }
-    public function deleteCategories(){
+
+    public function deleteCategories()
+    {
         $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
         if ($conn->connect_error) {
             die("Connection failed: ");
         }
-        $oldname=$this->request->getVar('name');
+        $oldname = $this->request->getVar('name');
         $sql = "select idcat from categories where name='" . $oldname . "'";
         $res = $conn->query($sql) or die('dead connection');
-        $idcat=0;
+        $idcat = 0;
         while ($row = $res->fetch_assoc()) {
             $idcat = $row['idcat'];
         }
-        $query="DELETE FROM categories where idcat=".$idcat;
+        $query = "DELETE FROM categories where idcat=" . $idcat;
         $conn->query($query);
-        $msg=new Message();
-        $msg->message="ok";
+        $msg = new Message();
+        $msg->message = "ok";
+        return json_encode($msg);
+    }
+
+    public function getAllProduct()
+    {
+        $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: ");
+        }
+        $sql = "select * from products";
+        $res = $conn->query($sql) or die($conn->error);
+        while ($row = $res->fetch_assoc()) {
+            $prod = new Product();
+            $prod->pn = $row['product_number'];
+            $prod->man = $row['manufacturer'];
+            $prod->upc = $row['upc'];
+            $prod->sku = $row['sku'];
+            $prod->reg_price = $row['regular_price'];
+            $prod->saleprice = $row['sale_price'];
+            $prod->desc = $row['description'];
+            $prod->idcat = $row['idcat'];
+            $prod->iddep = $row['iddep'];
+            $arr[] = $prod;
+        }
+        return json_encode($arr);
+    }
+
+    public function getProductPerCategoria()
+    {
+        $name = $this->request->getVar('name');
+        $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
+        $sql = "select idcat from categories where name='" . $name . "'";
+        $res = $conn->query($sql) or die('dead connection');
+        $idcat = 0;
+        while ($row = $res->fetch_assoc()) {
+            $idcat = $row['idcat'];
+        }
+        $sql = "select * from products where idcat=" . $idcat;
+        $res = $conn->query($sql) or die($conn->error);
+        while ($row = $res->fetch_assoc()) {
+            $prod = new Product();
+            $prod->pn = $row['product_number'];
+            $prod->man = $row['manufacturer'];
+            $prod->upc = $row['upc'];
+            $prod->sku = $row['sku'];
+            $prod->reg_price = $row['regular_price'];
+            $prod->saleprice = $row['sale_price'];
+            $prod->desc = $row['description'];
+            $prod->idcat = $row['idcat'];
+            $prod->iddep = $row['iddep'];
+            $arr[] = $prod;
+        }
+        return json_encode($arr);
+    }
+
+    public function deleteProduct()
+    {
+        $prodno = $this->request->getVar('prod-no');
+        $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: ");
+        }
+        $query = "DELETE FPOM products where product_number='" . $prodno . "'";
+        $conn->query($query);
+        $msg = new Message();
+        $msg->message = "ok";
+        return json_encode($msg);
+    }
+
+    public function updateProduct(){
+        $prodno=$this->request->getVar('prod-no');
+        $desc=$this->request->getVar('desc');
+        $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: ");
+        }
+        $query="UPDATE products set description='".$desc."'"." WHERE product_number='".$prodno."'";
+        $conn->query($query);
+        $msg = new Message();
+        $msg->message = "ok";
         return json_encode($msg);
     }
 }
