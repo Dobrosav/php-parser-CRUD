@@ -14,4 +14,8 @@ class Product{
     public $desc;
     public $idcat;
     public $iddep;
+    public function __toString()
+    {
+        return $this->pn.",".$this->man.",".$this->upc.",".$this->sku.",".$this->reg_price.",".$this->saleprice.",".$this->desc.",".$this->idcat.",".$this->iddep;
+    }
 }

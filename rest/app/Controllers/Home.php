@@ -241,4 +241,45 @@ class Home extends BaseController
         $msg->message = "ok";
         return json_encode($msg);
     }
+    public function generateCSV(){
+        $name = $this->request->getVar('name');
+        $conn = new \mysqli($this->servername, $this->username, $this->password, $this->dbname);
+        $sql = "select idcat from categories where name='" . $name . "'";
+        $res = $conn->query($sql) or die('dead connection');
+        $idcat = 0;
+        while ($row = $res->fetch_assoc()) {
+            $idcat = $row['idcat'];
+        }
+        $sql = "select * from products where idcat=" . $idcat;
+        $res = $conn->query($sql) or die($conn->error);
+        while ($row = $res->fetch_assoc()) {
+            $prod = new Product();
+            $prod->pn = $row['product_number'];
+            $prod->man = $row['manufacturer'];
+            $prod->upc = $row['upc'];
+            $prod->sku = $row['sku'];
+            $prod->reg_price = $row['regular_price'];
+            $prod->saleprice = $row['sale_price'];
+            $prod->desc = $row['description'];
+            $prod->idcat = $row['idcat'];
+            $prod->iddep = $row['iddep'];
+            $arr[] = $prod;
+        }
+        $filename=$name."_".date("Y_m_d_H_i_s").".csv";
+
+        $f=fopen($filename,"w");
+        if ($f === false) {
+            die('Error opening the file ' . $filename);
+        }
+        foreach ($arr as $row) {
+            $csvstring=strval($row);
+            fwrite($f, $csvstring."\n");
+        }
+
+        fclose($f);
+        $msg = new Message();
+        $msg->message = "ok";
+        return json_encode($msg);
+    }
+
 }
